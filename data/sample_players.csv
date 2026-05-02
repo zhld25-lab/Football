@@ -1,0 +1,37 @@
+player_id,player_name,age,nationality,position,club,league,height_cm,weight_kg,preferred_foot,appearances,minutes_played,goals,assists,market_value_eur,market_value_growth_pct,availability_score,league_level_score
+P001,Luca Marin,17,Spain,AM,Castilla Verde U19,Spain Division Honor,176,67,Right,24,1780,12,11,1800000,85,94,88
+P002,Noah Bennett,16,England,ST,Northbridge Academy,England U18 Premier,181,73,Right,22,1515,18,4,1500000,92,90,86
+P003,Matteo Rinaldi,17,Italy,CM,Torino Riverside U19,Italy Primavera,179,70,Right,26,2050,7,12,1200000,70,96,82
+P004,Elias Vogt,16,Germany,CB,Rheinstadt Juniors,Germany U19 Bundesliga,188,78,Right,25,2100,3,2,950000,55,98,84
+P005,Rafael Costa,17,Brazil,Winger,Sao Bento Youth,Brazil U20 League,173,65,Left,23,1620,10,9,1600000,78,87,80
+P006,Amir Diallo,15,France,DM,Paris Est Academy,France Championnat U19,180,69,Right,19,1260,2,7,900000,110,88,85
+P007,Kenji Sato,17,Japan,FB,Tokyo Harbor U18,Japan Youth Premier,171,64,Right,27,2210,1,8,650000,45,97,67
+P008,Diego Alvarez,16,Argentina,Winger,Rosario Futuro,Argentina Reserve League,174,66,Left,21,1485,9,10,1100000,88,91,76
+P009,Samuel Mensah,17,Ghana,ST,Accra Lions Academy,Ghana Youth League,184,76,Right,20,1395,14,3,700000,95,84,62
+P010,Oliver Hart,17,England,GK,Midlands Elite U18,England U18 Premier,190,80,Right,24,2160,0,1,550000,40,96,86
+P011,Tiago Ferreira,16,Portugal,CM,Lisbon Norte U19,Portugal Juniores,177,68,Right,23,1710,6,10,1300000,80,92,79
+P012,Yanis Benali,17,Morocco,AM,Casablanca Future,Morocco Youth League,175,66,Left,21,1540,8,12,600000,75,86,58
+P013,Felix Andersen,16,Denmark,CB,Copenhagen East Academy,Denmark U19 League,186,77,Right,22,1880,4,1,720000,60,95,70
+P014,Miles Carter,15,USA,Winger,Pacific Crest Academy,MLS Next,172,63,Right,18,1125,7,8,500000,120,82,65
+P015,Niels de Jong,17,Netherlands,DM,Rotterdam Noord U18,Netherlands U18 League,182,72,Right,26,2185,3,9,980000,68,93,78
+P016,Victor Hugo,16,Brazil,ST,Minas Aurora Youth,Brazil U20 League,183,74,Left,20,1420,15,5,1400000,105,89,80
+P017,Adam Nowak,17,Poland,FB,Warsaw United Academy,Poland Central Youth,178,69,Right,25,2025,2,6,420000,35,94,57
+P018,Theo Laurent,16,France,CB,Lyon Sud U19,France Championnat U19,187,78,Left,24,1995,3,3,1000000,72,97,85
+P019,Joao Silva,15,Portugal,AM,Porto Riverside U17,Portugal Juniores,174,65,Right,18,1190,8,9,1250000,130,83,79
+P020,Benjamin Keller,17,Germany,CM,Bavaria West Juniors,Germany U19 Bundesliga,180,71,Right,25,2060,5,11,1150000,64,95,84
+P021,Omar N'Diaye,16,Senegal,ST,Dakar Horizon,Dakar Youth League,185,75,Right,17,1040,12,2,480000,115,80,55
+P022,Lucas Moreau,17,Belgium,Winger,Brussels North U19,Belgium U18 League,176,67,Left,24,1765,9,7,870000,58,92,68
+P023,Hugo Svensson,16,Sweden,GK,Stockholm Academy,Sweden U19 League,191,82,Right,23,2070,0,0,430000,38,96,61
+P024,Ethan Brooks,16,England,CM,South Coast Scholars,England U18 Premier,178,68,Left,22,1640,6,8,1050000,76,90,86
+P025,Adrian Kovac,17,Croatia,CB,Zagreb Blue Academy,Croatia U19 League,189,79,Right,24,2125,2,2,520000,42,95,59
+P026,Santiago Ruiz,15,Mexico,Winger,Guadalajara Cantera,Mexico Sub-18 League,170,62,Right,19,1215,8,7,560000,98,85,60
+P027,Ibrahim Okoro,17,Nigeria,DM,Lagos City Academy,Nigeria Youth League,181,72,Right,20,1500,4,5,450000,66,87,54
+P028,Jakob Nielsen,16,Norway,FB,Oslo Fjord U18,Norway U19 League,179,70,Left,22,1720,2,7,470000,52,91,58
+P029,Leo Martin,17,France,AM,Marseille Littoral U19,France Championnat U19,176,66,Right,23,1680,9,13,1450000,82,90,85
+P030,Enzo Park,16,South Korea,CM,Seoul Metro Academy,K League Youth,175,67,Right,21,1575,5,9,680000,73,89,63
+P031,Marcus Reed,18,USA,ST,Great Lakes Academy,MLS Next,184,76,Right,24,1810,16,4,850000,45,88,65
+P032,Antonio Greco,19,Italy,CM,Napoli Bay Primavera,Italy Primavera,181,72,Right,27,2320,8,10,1400000,32,94,82
+P033,Julien Petit,18,France,Winger,Nantes Atlantique U19,France Championnat U19,174,65,Left,22,1600,9,6,950000,40,86,85
+P034,Maxim Weiss,20,Germany,CB,Hamburg Nord II,Germany Regionalliga,190,82,Right,28,2440,4,1,750000,20,91,72
+P035,Ruben Santos,18,Portugal,FB,Braga Vale U23,Portugal Liga Revelacao,177,69,Right,25,2055,2,9,820000,36,92,74
+P036,Charlie Evans,19,England,GK,East Midlands U21,England U21 League,193,84,Right,26,2340,0,0,620000,28,93,76

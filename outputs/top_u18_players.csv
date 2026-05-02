@@ -1,0 +1,31 @@
+player_id,player_name,age,nationality,position,club,league,talent_score,performance_score,development_score,playing_time_score,league_context_score,age_advantage_score,availability_score
+P019,Joao Silva,15,Portugal,AM,Porto Riverside U17,Portugal Juniores,74.82,87.66,84.06,13.97,73.53,100.0,83
+P002,Noah Bennett,16,England,ST,Northbridge Academy,England U18 Premier,74.75,86.78,67.3,45.09,94.12,66.67,90
+P001,Luca Marin,17,Spain,AM,Castilla Verde U19,Spain Division Honor,74.02,78.99,71.58,67.61,100.0,33.33,94
+P016,Victor Hugo,16,Brazil,ST,Minas Aurora Youth,Brazil U20 League,71.57,84.61,72.62,37.74,76.47,66.67,89
+P029,Leo Martin,17,France,AM,Marseille Littoral U19,France Championnat U19,68.39,80.73,59.54,54.96,91.18,33.33,90
+P008,Diego Alvarez,16,Argentina,Winger,Rosario Futuro,Argentina Reserve League,63.89,78.5,53.18,44.96,64.71,66.67,91
+P005,Rafael Costa,17,Brazil,Winger,Sao Bento Youth,Brazil U20 League,62.18,71.67,61.36,46.37,76.47,33.33,87
+P011,Tiago Ferreira,16,Portugal,CM,Lisbon Norte U19,Portugal Juniores,60.43,57.83,53.93,60.09,73.53,66.67,92
+P003,Matteo Rinaldi,17,Italy,CM,Torino Riverside U19,Italy Primavera,59.98,57.31,44.71,87.09,82.35,33.33,96
+P014,Miles Carter,15,USA,Winger,Pacific Crest Academy,MLS Next,58.76,81.84,56.0,8.42,32.35,100.0,82
+P006,Amir Diallo,15,France,DM,Paris Est Academy,France Championnat U19,58.6,44.65,61.28,26.5,91.18,100.0,88
+P024,Ethan Brooks,16,England,CM,South Coast Scholars,England U18 Premier,58.1,52.55,44.16,52.56,94.12,66.67,90
+P020,Benjamin Keller,17,Germany,CM,Bavaria West Juniors,Germany U19 Bundesliga,56.22,48.23,39.48,86.03,88.24,33.33,95
+P026,Santiago Ruiz,15,Mexico,Winger,Guadalajara Cantera,Mexico Sub-18 League,52.82,75.4,43.85,18.8,17.65,100.0,85
+P018,Theo Laurent,16,France,CB,Lyon Sud U19,France Championnat U19,49.65,18.41,40.18,85.47,91.18,66.67,97
+P015,Niels de Jong,17,Netherlands,DM,Rotterdam Noord U18,Netherlands U18 League,48.71,34.26,37.07,90.17,70.59,33.33,93
+P021,Omar N'Diaye,16,Senegal,ST,Dakar Horizon,Dakar Youth League,48.25,80.2,52.27,0.0,2.94,66.67,80
+P009,Samuel Mensah,17,Ghana,ST,Accra Lions Academy,Ghana Youth League,48.03,72.79,46.01,27.91,23.53,33.33,84
+P012,Yanis Benali,17,Morocco,AM,Casablanca Future,Morocco Youth League,46.75,80.12,30.48,39.91,11.76,33.33,86
+P004,Elias Vogt,16,Germany,CB,Rheinstadt Juniors,Germany U19 Bundesliga,45.98,14.47,27.99,93.42,88.24,66.67,98
+P022,Lucas Moreau,17,Belgium,Winger,Brussels North U19,Belgium U18 League,45.24,55.24,27.57,63.38,41.18,33.33,92
+P030,Enzo Park,16,South Korea,CM,Seoul Metro Academy,K League Youth,44.83,55.01,31.54,47.01,26.47,66.67,89
+P013,Felix Andersen,16,Denmark,CB,Copenhagen East Academy,Denmark U19 League,36.71,15.92,24.49,75.26,47.06,66.67,95
+P007,Kenji Sato,17,Japan,FB,Tokyo Harbor U18,Japan Youth Premier,36.05,25.67,12.98,98.33,38.24,33.33,97
+P010,Oliver Hart,17,England,GK,Midlands Elite U18,England U18 Premier,34.26,2.94,6.93,93.68,94.12,33.33,96
+P028,Jakob Nielsen,16,Norway,FB,Oslo Fjord U18,Norway U19 League,31.78,32.71,12.19,59.02,11.76,66.67,91
+P027,Ibrahim Okoro,17,Nigeria,DM,Lagos City Academy,Nigeria Youth League,27.24,36.89,20.45,39.19,0.0,33.33,87
+P017,Adam Nowak,17,Poland,FB,Warsaw United Academy,Poland Central Youth,25.62,24.65,0.0,82.26,8.82,33.33,94
+P025,Adrian Kovac,17,Croatia,CB,Zagreb Blue Academy,Croatia U19 League,24.89,11.53,7.32,89.91,14.71,33.33,95
+P023,Hugo Svensson,16,Sweden,GK,Stockholm Academy,Sweden U19 League,23.54,0.0,2.18,88.29,20.59,66.67,96
