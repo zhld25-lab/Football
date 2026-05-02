@@ -26,7 +26,7 @@ Running `python main.py` creates:
 - `outputs/figures/score_breakdown.png`
 - `outputs/figures/position_distribution.png`
 
-Running `streamlit run streamlit_app.py` opens the interactive dashboard with overview, data explorer, ranking, player profile, recommendation, model explanation, visual analytics, ethics, and project information sections.
+Running `streamlit run streamlit_app.py` opens the interactive dashboard with overview, data explorer, ranking, player profile, recommendation, model explanation, visual analytics, ethics, and project information sections. The dashboard includes a Barca-inspired visual theme, football imagery, image-based player cards, and six-axis radar charts for player profiles.
 
 ## Ethics
 

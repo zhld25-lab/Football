@@ -1,3 +1,4 @@
+from html import escape
 from io import BytesIO
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -121,6 +122,72 @@ ANALYTIC_COLUMNS = [
     "talent_score",
 ]
 
+THEMES = {
+    "Barca Inspired": {
+        "name": "Barca Inspired",
+        "primary": "#A50044",
+        "secondary": "#004D98",
+        "gold": "#EDBB00",
+        "surface": "rgba(8, 14, 34, 0.82)",
+        "surface_light": "rgba(255, 255, 255, 0.10)",
+        "text": "#F8FAFC",
+        "muted": "#CBD5E1",
+        "background": "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=2200&q=80",
+    },
+    "Classic Light": {
+        "name": "Classic Light",
+        "primary": "#1F77B4",
+        "secondary": "#2E7D6B",
+        "gold": "#F59E0B",
+        "surface": "rgba(255, 255, 255, 0.92)",
+        "surface_light": "rgba(15, 23, 42, 0.06)",
+        "text": "#0F172A",
+        "muted": "#475569",
+        "background": "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=2200&q=80",
+    },
+}
+
+FOOTBALL_IMAGES = [
+    "https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&w=900&q=80",
+    "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?auto=format&fit=crop&w=900&q=80",
+    "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=900&q=80",
+    "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=900&q=80",
+    "https://images.unsplash.com/photo-1524015368236-bbf6f72545b6?auto=format&fit=crop&w=900&q=80",
+    "https://images.unsplash.com/photo-1529900748604-07564a03e7a6?auto=format&fit=crop&w=900&q=80",
+]
+
+POSITION_IMAGES = {
+    "GK": "https://images.unsplash.com/photo-1551958219-acbc608c6377?auto=format&fit=crop&w=900&q=80",
+    "CB": "https://images.unsplash.com/photo-1626248801379-51a0748a5f96?auto=format&fit=crop&w=900&q=80",
+    "FB": "https://images.unsplash.com/photo-1553778263-73a83bab9b0c?auto=format&fit=crop&w=900&q=80",
+    "DM": "https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=900&q=80",
+    "CM": "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=900&q=80",
+    "AM": "https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=900&q=80",
+    "Winger": "https://images.unsplash.com/photo-1518604666860-9ed391f76460?auto=format&fit=crop&w=900&q=80",
+    "ST": "https://images.unsplash.com/photo-1556056504-5c7696c4c28d?auto=format&fit=crop&w=900&q=80",
+}
+
+MEDIA_STORIES = [
+    {
+        "title": "Academy Watchlist",
+        "tag": "U18 Radar",
+        "copy": "用数据先筛出值得看录像的球员，再交给球探判断比赛气质和战术适配。",
+        "image": "https://images.unsplash.com/photo-1522778034537-20a2486be803?auto=format&fit=crop&w=900&q=80",
+    },
+    {
+        "title": "Blaugrana Theme",
+        "tag": "Presentation Mode",
+        "copy": "红蓝配色、球场背景和深色玻璃卡片，让最终展示更像真实俱乐部看板。",
+        "image": "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=900&q=80",
+    },
+    {
+        "title": "Similar Player Search",
+        "tag": "Recommendation",
+        "copy": "如果俱乐部喜欢某一类球员，可以快速找到数据画像相近的其他候选人。",
+        "image": "https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=900&q=80",
+    },
+]
+
 
 def standardize_column_name(column_name: str) -> str:
     cleaned = column_name.strip().lower()
@@ -134,6 +201,7 @@ def standardize_column_name(column_name: str) -> str:
 def init_session_state() -> None:
     st.session_state.setdefault("selected_player", None)
     st.session_state.setdefault("uploaded_dataset_name", None)
+    st.session_state.setdefault("visual_theme", "Barca Inspired")
     for component, weight in SCORE_WEIGHTS.items():
         st.session_state.setdefault(weight_key(component), int(round(weight * 100)))
         st.session_state.setdefault(
@@ -277,32 +345,395 @@ def ensure_output_files(ranked_players: pd.DataFrame) -> None:
 
 
 def render_custom_css() -> None:
+    theme = THEMES.get(st.session_state.get("visual_theme"), THEMES["Barca Inspired"])
     st.markdown(
-        """
+        f"""
         <style>
-        .block-container {
-            padding-top: 2rem;
+        .stApp {{
+            background:
+                linear-gradient(120deg, rgba(0, 77, 152, 0.90), rgba(165, 0, 68, 0.86)),
+                url('{theme["background"]}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: {theme["text"]};
+        }}
+        .block-container {{
+            padding-top: 1.4rem;
             padding-bottom: 2rem;
-        }
-        [data-testid="stMetric"] {
-            background: #f8fafc;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
+        }}
+        [data-testid="stSidebar"] > div:first-child {{
+            background: linear-gradient(180deg, rgba(3, 7, 18, 0.96), rgba(15, 23, 42, 0.92));
+            border-right: 1px solid rgba(255, 255, 255, 0.12);
+        }}
+        [data-testid="stMetric"] {{
+            background: {theme["surface"]};
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 14px;
             padding: 0.85rem 1rem;
-        }
-        .small-muted {
-            color: #64748b;
+            box-shadow: 0 12px 28px rgba(2, 6, 23, 0.18);
+        }}
+        .small-muted {{
+            color: {theme["muted"]};
             font-size: 0.95rem;
-        }
+        }}
+        .hero-shell {{
+            min-height: 360px;
+            border-radius: 22px;
+            padding: 2rem;
+            margin-bottom: 1rem;
+            background:
+                linear-gradient(90deg, rgba(3, 7, 18, 0.84), rgba(0, 77, 152, 0.42), rgba(165, 0, 68, 0.58)),
+                url('https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=2000&q=80');
+            background-size: cover;
+            background-position: center;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            box-shadow: 0 28px 70px rgba(2, 6, 23, 0.38);
+            display: flex;
+            align-items: flex-end;
+        }}
+        .hero-kicker {{
+            color: {theme["gold"]};
+            font-size: 0.85rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }}
+        .hero-title {{
+            color: white;
+            font-size: 3rem;
+            line-height: 1.05;
+            font-weight: 900;
+            margin: 0.35rem 0;
+        }}
+        .hero-copy {{
+            color: #E5E7EB;
+            max-width: 740px;
+            font-size: 1.04rem;
+        }}
+        .glass-card, .player-card, .media-card {{
+            background: {theme["surface"]};
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 16px;
+            box-shadow: 0 18px 42px rgba(2, 6, 23, 0.24);
+            overflow: hidden;
+        }}
+        .glass-card {{
+            padding: 1rem;
+        }}
+        .media-card img, .player-card img {{
+            width: 100%;
+            height: 170px;
+            object-fit: cover;
+            display: block;
+        }}
+        .media-body, .player-body {{
+            padding: 0.95rem;
+        }}
+        .tag-pill {{
+            display: inline-block;
+            border: 1px solid rgba(237, 187, 0, 0.55);
+            color: {theme["gold"]};
+            border-radius: 999px;
+            padding: 0.12rem 0.55rem;
+            font-size: 0.75rem;
+            font-weight: 800;
+            margin-bottom: 0.45rem;
+        }}
+        .player-name {{
+            color: white;
+            font-size: 1rem;
+            font-weight: 850;
+            margin-bottom: 0.25rem;
+        }}
+        .player-meta {{
+            color: {theme["muted"]};
+            font-size: 0.85rem;
+        }}
+        .score-badge {{
+            margin-top: 0.6rem;
+            color: #020617;
+            background: linear-gradient(90deg, {theme["gold"]}, #FDE68A);
+            padding: 0.35rem 0.55rem;
+            border-radius: 10px;
+            display: inline-block;
+            font-weight: 900;
+        }}
+        .section-kicker {{
+            color: {theme["gold"]};
+            font-size: 0.8rem;
+            font-weight: 850;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }}
+        .section-title {{
+            color: white;
+            font-size: 1.7rem;
+            font-weight: 900;
+            margin: 0.1rem 0 0.8rem;
+        }}
+        .workflow-chip {{
+            background: {theme["surface"]};
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 14px;
+            padding: 0.8rem;
+            min-height: 88px;
+        }}
+        .theme-note {{
+            color: {theme["muted"]};
+            font-size: 0.82rem;
+        }}
         </style>
         """,
         unsafe_allow_html=True,
     )
 
 
+def get_active_theme() -> Dict[str, str]:
+    return THEMES.get(st.session_state.get("visual_theme"), THEMES["Barca Inspired"])
+
+
+def stable_index(value: object, length: int) -> int:
+    if length <= 0:
+        return 0
+    text = str(value)
+    return sum(ord(character) for character in text) % length
+
+
+def player_image_url(player: pd.Series) -> str:
+    position = str(player.get("position", ""))
+    if position in POSITION_IMAGES:
+        return POSITION_IMAGES[position]
+    return FOOTBALL_IMAGES[stable_index(player.get("player_name", ""), len(FOOTBALL_IMAGES))]
+
+
+def render_section_heading(kicker: str, title: str, copy: str = "") -> None:
+    st.markdown(
+        f"""
+        <div class="section-kicker">{escape(kicker)}</div>
+        <div class="section-title">{escape(title)}</div>
+        """,
+        unsafe_allow_html=True,
+    )
+    if copy:
+        st.markdown(f'<p class="small-muted">{escape(copy)}</p>', unsafe_allow_html=True)
+
+
+def render_hero(ranked_players: pd.DataFrame) -> None:
+    top_name = "No player ranked yet"
+    top_score = "N/A"
+    if not ranked_players.empty:
+        top_name = str(ranked_players.iloc[0]["player_name"])
+        top_score = f'{ranked_players.iloc[0]["talent_score"]:.2f}'
+
+    st.markdown(
+        f"""
+        <div class="hero-shell">
+            <div>
+                <div class="hero-kicker">Barca-inspired scouting command center</div>
+                <div class="hero-title">ScoutAI Youth Talent Lab</div>
+                <div class="hero-copy">
+                    一个红蓝主题的 U18 球探数据网站：综合球员数据、能力六边形、
+                    相似球员搜索、图片栏目和可视化看板，帮助球探做更聪明的 shortlist。
+                </div>
+                <div class="score-badge">Current No.1: {escape(top_name)} | Talent Score {top_score}</div>
+                <div class="theme-note">Theme note: Barca-inspired visual style only. No official club affiliation.</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_media_wall() -> None:
+    render_section_heading(
+        "Visual Columns",
+        "球探媒体栏目",
+        "用图片和短文把数据项目讲成一个完整的足球故事，而不是只有表格。",
+    )
+    columns = st.columns(3)
+    for column, story in zip(columns, MEDIA_STORIES):
+        with column:
+            st.markdown(
+                f"""
+                <div class="media-card">
+                    <img src="{story['image']}" alt="{escape(story['title'])}">
+                    <div class="media-body">
+                        <div class="tag-pill">{escape(story['tag'])}</div>
+                        <div class="player-name">{escape(story['title'])}</div>
+                        <div class="player-meta">{escape(story['copy'])}</div>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+
+def render_player_gallery(players: pd.DataFrame, title: str, limit: int = 6) -> None:
+    if players.empty:
+        return
+
+    render_section_heading(
+        "Player Gallery",
+        title,
+        "球员卡片墙用于展示 shortlist，不只是把名字放进表格。",
+    )
+    visible_players = players.head(limit).reset_index(drop=True)
+    columns = st.columns(min(3, len(visible_players)))
+    for index, (_, player) in enumerate(visible_players.iterrows()):
+        with columns[index % len(columns)]:
+            st.markdown(
+                f"""
+                <div class="player-card">
+                    <img src="{player_image_url(player)}" alt="{escape(player['player_name'])}">
+                    <div class="player-body">
+                        <div class="tag-pill">{escape(str(player['position']))} | Age {int(player['age'])}</div>
+                        <div class="player-name">{escape(str(player['player_name']))}</div>
+                        <div class="player-meta">{escape(str(player['club']))}</div>
+                        <div class="player-meta">{escape(str(player['league']))}</div>
+                        <div class="score-badge">Talent Score {player['talent_score']:.2f}</div>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+
+def make_player_radar_chart(player: pd.Series) -> go.Figure:
+    theme = get_active_theme()
+    categories = [
+        "Talent",
+        "Performance",
+        "Development",
+        "Playing Time",
+        "League Context",
+        "Availability",
+    ]
+    values = [
+        player["talent_score"],
+        player["performance_score"],
+        player["development_score"],
+        player["playing_time_score"],
+        player["league_context_score"],
+        player["availability_score"],
+    ]
+    closed_categories = categories + [categories[0]]
+    closed_values = values + [values[0]]
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatterpolar(
+            r=closed_values,
+            theta=closed_categories,
+            fill="toself",
+            name=str(player["player_name"]),
+            line=dict(color=theme["gold"], width=3),
+            fillcolor="rgba(237, 187, 0, 0.28)",
+        )
+    )
+    fig.update_layout(
+        title=f"{player['player_name']} 能力六边形",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=theme["text"]),
+        polar=dict(
+            bgcolor="rgba(0,0,0,0)",
+            radialaxis=dict(visible=True, range=[0, 100], gridcolor="rgba(255,255,255,0.22)"),
+            angularaxis=dict(gridcolor="rgba(255,255,255,0.22)"),
+        ),
+        margin=dict(l=40, r=40, t=70, b=40),
+    )
+    return fig
+
+
+def make_radar_comparison_chart(players: pd.DataFrame, limit: int = 3) -> go.Figure:
+    theme = get_active_theme()
+    categories = [
+        "Talent",
+        "Performance",
+        "Development",
+        "Playing Time",
+        "League Context",
+        "Availability",
+    ]
+    fig = go.Figure()
+    colors = [theme["gold"], theme["primary"], theme["secondary"]]
+    for index, (_, player) in enumerate(players.head(limit).iterrows()):
+        values = [
+            player["talent_score"],
+            player["performance_score"],
+            player["development_score"],
+            player["playing_time_score"],
+            player["league_context_score"],
+            player["availability_score"],
+        ]
+        fig.add_trace(
+            go.Scatterpolar(
+                r=values + [values[0]],
+                theta=categories + [categories[0]],
+                fill="toself",
+                name=str(player["player_name"]),
+                line=dict(color=colors[index % len(colors)], width=2),
+                opacity=0.75,
+            )
+        )
+    fig.update_layout(
+        title="Top Players 能力六边形对比",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=theme["text"]),
+        polar=dict(radialaxis=dict(visible=True, range=[0, 100])),
+        margin=dict(l=40, r=40, t=70, b=40),
+    )
+    return fig
+
+
+def render_recommendation_cards(recommendations: pd.DataFrame, ranked_players: pd.DataFrame) -> None:
+    if recommendations.empty:
+        return
+    render_section_heading(
+        "Similar Profiles",
+        "相似球员图片推荐",
+        "卡片保留数据表的精度，同时让展示更像球探部门内部 briefing。",
+    )
+    merged = recommendations.merge(
+        ranked_players,
+        left_on="similar_player",
+        right_on="player_name",
+        how="left",
+        suffixes=("", "_source"),
+    )
+    columns = st.columns(min(3, len(merged)))
+    for index, (_, row) in enumerate(merged.iterrows()):
+        with columns[index % len(columns)]:
+            st.markdown(
+                f"""
+                <div class="player-card">
+                    <img src="{player_image_url(row)}" alt="{escape(row['similar_player'])}">
+                    <div class="player-body">
+                        <div class="tag-pill">Similarity {row['similarity_score']:.2f}</div>
+                        <div class="player-name">{escape(str(row['similar_player']))}</div>
+                        <div class="player-meta">{escape(str(row['position']))} | {escape(str(row['club']))}</div>
+                        <div class="score-badge">Talent Score {row['talent_score']:.2f}</div>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+
 def render_dataset_controls() -> Tuple[pd.DataFrame, str]:
-    st.sidebar.markdown("## ⚽ ScoutAI")
-    st.sidebar.caption("Data-driven U18 football scouting dashboard")
+    st.sidebar.markdown("## ScoutAI")
+    st.sidebar.caption("U18 football scouting dashboard")
+    st.sidebar.radio(
+        "视觉主题",
+        options=list(THEMES.keys()),
+        key="visual_theme",
+        help="Barca Inspired 使用红蓝配色和球场背景，Classic Light 更适合简洁报告展示。",
+    )
+    st.sidebar.caption(
+        "Barca-inspired theme is a visual style only; this project has no official club affiliation."
+    )
     st.sidebar.divider()
 
     uploaded_file = st.sidebar.file_uploader(
@@ -533,7 +964,12 @@ def make_kpi_cards(clean_players: pd.DataFrame, ranked_players: pd.DataFrame) ->
 
 
 def render_overview(clean_players: pd.DataFrame, ranked_players: pd.DataFrame) -> None:
-    st.header("ScoutAI Overview")
+    render_hero(ranked_players)
+    render_section_heading(
+        "Overview",
+        "项目总览",
+        "把课程项目包装成一个更像真实足球媒体和球探部门共同使用的 dashboard。",
+    )
     st.markdown(
         """
         ScoutAI is a data-driven scouting assistant that helps football clubs create
@@ -546,15 +982,17 @@ def render_overview(clean_players: pd.DataFrame, ranked_players: pd.DataFrame) -
 
     make_kpi_cards(clean_players, ranked_players)
     st.divider()
+    render_media_wall()
+    st.divider()
 
-    st.subheader("Problem Statement")
+    st.subheader("Problem Statement / 问题陈述")
     st.write(
         "Youth scouting teams often review many players with incomplete public data. "
         "ScoutAI turns basic football information into a transparent ranking and "
         "similar-player workflow that supports, rather than replaces, expert review."
     )
 
-    st.subheader("Data Science Workflow")
+    st.subheader("Data Science Workflow / 数据科学流程")
     workflow_columns = st.columns(7)
     workflow_steps = [
         "Public Football Data",
@@ -566,14 +1004,19 @@ def render_overview(clean_players: pd.DataFrame, ranked_players: pd.DataFrame) -
         "Scout Shortlist",
     ]
     for index, step in enumerate(workflow_steps):
-        workflow_columns[index].markdown(f"**{step}**")
-        if index < len(workflow_steps) - 1:
-            workflow_columns[index].caption("then")
+        workflow_columns[index].markdown(
+            f'<div class="workflow-chip"><strong>{escape(step)}</strong><br><span class="small-muted">Step {index + 1}</span></div>',
+            unsafe_allow_html=True,
+        )
 
     st.info(
         "Key idea: public data can help scouts prioritize review, but human scouts "
         "still make the final decision after video, context, coaching, and ethical checks."
     )
+
+    if not ranked_players.empty:
+        st.divider()
+        render_player_gallery(ranked_players, "首页重点球员卡片", limit=6)
 
 
 def render_data_explorer(
@@ -775,6 +1218,26 @@ def render_talent_ranking(
             use_container_width=True,
         )
 
+    st.divider()
+    radar_columns = st.columns([1.05, 1])
+    with radar_columns[0]:
+        st.plotly_chart(
+            make_radar_comparison_chart(ranking_data, limit=min(3, len(ranking_data))),
+            use_container_width=True,
+        )
+    with radar_columns[1]:
+        render_section_heading(
+            "Hexagon Comparison",
+            "懂球帝风格能力六边形",
+            "用六个维度同时比较球员画像：Talent、Performance、Development、Playing Time、League Context、Availability。",
+        )
+        st.write(
+            "六边形图比单一分数更适合课堂展示，因为它能说明一个球员到底是靠进攻产出、发展潜力、出场稳定性，还是联赛环境拿到高分。"
+        )
+
+    st.divider()
+    render_player_gallery(ranking_data, "Top Shortlist 图片球员墙", limit=min(6, display_count))
+
 
 def render_player_profile(ranked_players: pd.DataFrame) -> None:
     st.header("Player Profile")
@@ -793,6 +1256,25 @@ def render_player_profile(ranked_players: pd.DataFrame) -> None:
         key="selected_player",
     )
     player = ranked_players[ranked_players["player_name"] == selected_player].iloc[0]
+
+    spotlight_columns = st.columns([0.9, 1.6])
+    with spotlight_columns[0]:
+        st.markdown(
+            f"""
+            <div class="player-card">
+                <img src="{player_image_url(player)}" alt="{escape(player['player_name'])}">
+                <div class="player-body">
+                    <div class="tag-pill">Player Spotlight</div>
+                    <div class="player-name">{escape(str(player['player_name']))}</div>
+                    <div class="player-meta">{escape(str(player['position']))} | {escape(str(player['club']))}</div>
+                    <div class="score-badge">Talent Score {player['talent_score']:.2f}</div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with spotlight_columns[1]:
+        st.plotly_chart(make_player_radar_chart(player), use_container_width=True)
 
     st.subheader(player["player_name"])
     identity_columns = st.columns(6)
@@ -947,6 +1429,9 @@ def render_similar_player_finder(ranked_players: pd.DataFrame) -> None:
         use_container_width=True,
     )
 
+    st.divider()
+    render_recommendation_cards(recommendations, ranked_players)
+
     comparison_data = recommendations.rename(columns={"similar_player": "player"})
     fig = px.bar(
         comparison_data,
@@ -1069,10 +1554,19 @@ Talent Score =
 
 
 def render_visual_analytics(ranked_players: pd.DataFrame) -> None:
-    st.header("Visual Analytics")
+    render_section_heading(
+        "Visual Analytics",
+        "数据可视化战情室",
+        "把排名、市场价值、年龄、出场时间和联赛分布放在同一页，方便展示时讲清楚模型结果。",
+    )
     if ranked_players.empty:
         st.warning("No U18 players are available for visual analytics.")
         return
+
+    image_columns = st.columns(3)
+    for index, column in enumerate(image_columns):
+        with column:
+            st.image(FOOTBALL_IMAGES[index], use_container_width=True)
 
     chart = make_top_players_chart(ranked_players, limit=10)
     st.plotly_chart(chart, use_container_width=True)
@@ -1320,13 +1814,13 @@ streamlit run streamlit_app.py
 
 
 def render_header(dataset_name: str) -> None:
-    st.title("ScoutAI: Youth Football Scouting Dashboard")
+    st.title("ScoutAI: 红蓝主题青年球探数据中心")
     st.markdown(
         f"""
         <p class="small-muted">
-        Data-driven U18 football scouting dashboard for ranking players,
-        explaining score components, and finding similar player profiles.
-        Active dataset: <strong>{dataset_name}</strong>.
+        Barca-inspired visual dashboard for ranking U18 players,
+        comparing hexagon profiles, and building a scout shortlist.
+        Active dataset: <strong>{escape(dataset_name)}</strong>.
         </p>
         """,
         unsafe_allow_html=True,
@@ -1364,15 +1858,15 @@ def main() -> None:
 
     tabs = st.tabs(
         [
-            "Overview",
-            "Data Explorer",
-            "Talent Ranking",
-            "Player Profile",
-            "Similar Player Finder",
-            "Score Model Explanation",
-            "Visual Analytics",
-            "Ethics and Limitations",
-            "About This Project",
+            "首页 Overview",
+            "数据 Data Explorer",
+            "排名 Talent Ranking",
+            "球员 Player Profile",
+            "相似 Similar Finder",
+            "模型 Score Model",
+            "图表 Visual Analytics",
+            "伦理 Ethics",
+            "项目 About",
         ]
     )
 

@@ -283,10 +283,11 @@ The repository includes a full Streamlit application in `streamlit_app.py`. The 
 | Area | What the App Provides |
 | --- | --- |
 | Overview | Project goal, problem statement, workflow, and KPI cards |
+| Visual Theme | Barca-inspired red-blue presentation theme, stadium background, image cards, and optional classic light mode |
 | Data Explorer | Full and filtered dataset previews, missing values, descriptive statistics, and CSV download |
-| Talent Ranking | Ranked U18 table, score formatting, top-player chart, component comparison, and ranked CSV download |
-| Player Profile | Detailed player cards, per-90 metrics, score breakdown, and automatic interpretation text |
-| Similar Player Finder | Cosine-similarity recommendations with same-position option and CSV download |
+| Talent Ranking | Ranked U18 table, score formatting, top-player chart, component comparison, image shortlist wall, and ranked CSV download |
+| Player Profile | Detailed player cards, football imagery, per-90 metrics, score breakdown, hexagon radar chart, and automatic interpretation text |
+| Similar Player Finder | Cosine-similarity recommendations with same-position option, image recommendation cards, and CSV download |
 | Score Model Explanation | Formula, component table, custom weight sliders, normalization warning, and active ranking |
 | Visual Analytics | Interactive charts for score, position, market value, age, minutes, position averages, and league averages |
 | Ethics and Limitations | Strong warning about minors, public data, bias, and human scouting responsibility |
@@ -334,11 +335,11 @@ streamlit run streamlit_app.py
 
 The app is expected to show these presentation-ready screens:
 
-- Overview dashboard with KPI cards and workflow explanation.
+- Overview dashboard with a Barca-inspired hero background, KPI cards, football image columns, and workflow explanation.
 - Data Explorer with filters, table previews, missing value summary, and download button.
-- Talent Ranking with a sortable ranking table and interactive charts.
-- Player Profile with selected-player cards, calculated metrics, and score breakdown.
-- Similar Player Finder with similarity scores and downloadable recommendations.
+- Talent Ranking with a sortable ranking table, interactive charts, image shortlist cards, and top-player radar comparison.
+- Player Profile with selected-player cards, calculated metrics, image spotlight, score breakdown, and a six-axis ability radar.
+- Similar Player Finder with similarity scores, visual recommendation cards, and downloadable recommendations.
 - Score Model Explanation with formula, component weights, and custom weight controls.
 - Visual Analytics with multiple interactive scouting charts.
 - Ethics and Limitations page with a clear warning about U18 player privacy and responsible use.
