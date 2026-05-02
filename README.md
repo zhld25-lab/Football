@@ -289,6 +289,7 @@ The repository includes a full Streamlit application in `streamlit_app.py`. The 
 | Talent Ranking | Ranked U18 table, score formatting, top-player chart, component comparison, radar comparison, image shortlist wall, and ranked CSV download |
 | Player Profile | Dark high-contrast player dossier, football imagery, gauge chart, per-90 output chart, score bars, hexagon radar chart, and automatic interpretation text |
 | Similar Player Finder | Cosine-similarity recommendations with same-position option, visual scatter chart, image recommendation cards, and CSV download |
+| Regional Map | Interactive world map, country bubble selection, country heatmap, regional player cards, and regional CSV download |
 | Score Model Explanation | Formula, component table, custom weight sliders, normalization warning, and active ranking |
 | Motion Windows | Small animated tactical-board and video windows for a more presentation-ready football-media feel |
 | Visual Analytics | Interactive charts for score, position, market value, age, minutes, position averages, and league averages |
@@ -342,6 +343,7 @@ The app is expected to show these presentation-ready screens:
 - Talent Ranking with a sortable ranking table, interactive charts, image shortlist cards, and top-player radar comparison.
 - Player Profile with selected-player cards, a search box, high-contrast dossier panels, gauge charts, output charts, and a six-axis ability radar.
 - Similar Player Finder with searchable target selection, similarity scatter chart, visual recommendation cards, and downloadable recommendations.
+- Regional Map with clickable/selectable country bubbles, country heatmap, and regional shortlist cards.
 - Score Model Explanation with formula, component weights, and custom weight controls.
 - Visual Analytics with multiple interactive scouting charts and football-media visual windows.
 - Ethics and Limitations page with a clear warning about U18 player privacy and responsible use.

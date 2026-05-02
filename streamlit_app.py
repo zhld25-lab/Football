@@ -195,6 +195,32 @@ SEARCH_EXAMPLE_NAMES = [
     "Lampros Choutos",
 ]
 
+COUNTRY_COORDS = {
+    "Argentina": (-38.4161, -63.6167),
+    "Belgium": (50.5039, 4.4699),
+    "Brazil": (-14.2350, -51.9253),
+    "Croatia": (45.1000, 15.2000),
+    "Denmark": (56.2639, 9.5018),
+    "England": (52.3555, -1.1743),
+    "France": (46.2276, 2.2137),
+    "Germany": (51.1657, 10.4515),
+    "Ghana": (7.9465, -1.0232),
+    "Italy": (41.8719, 12.5674),
+    "Japan": (36.2048, 138.2529),
+    "Mexico": (23.6345, -102.5528),
+    "Morocco": (31.7917, -7.0926),
+    "Netherlands": (52.1326, 5.2913),
+    "Nigeria": (9.0820, 8.6753),
+    "Norway": (60.4720, 8.4689),
+    "Poland": (51.9194, 19.1451),
+    "Portugal": (39.3999, -8.2245),
+    "Senegal": (14.4974, -14.4524),
+    "South Korea": (35.9078, 127.7669),
+    "Spain": (40.4637, -3.7492),
+    "Sweden": (60.1282, 18.6435),
+    "USA": (37.0902, -95.7129),
+}
+
 
 def standardize_column_name(column_name: str) -> str:
     cleaned = column_name.strip().lower()
@@ -949,6 +975,312 @@ def render_recommendation_cards(recommendations: pd.DataFrame, ranked_players: p
                 """,
                 unsafe_allow_html=True,
             )
+
+
+def prepare_country_distribution(players: pd.DataFrame) -> pd.DataFrame:
+    if players.empty or "nationality" not in players.columns:
+        return pd.DataFrame(
+            columns=[
+                "nationality",
+                "player_count",
+                "avg_talent_score",
+                "highest_talent_score",
+                "lat",
+                "lon",
+            ]
+        )
+
+    distribution = (
+        players.groupby("nationality", as_index=False)
+        .agg(
+            player_count=("player_name", "count"),
+            avg_talent_score=("talent_score", "mean"),
+            highest_talent_score=("talent_score", "max"),
+        )
+        .sort_values(["player_count", "avg_talent_score"], ascending=False)
+    )
+    distribution["lat"] = distribution["nationality"].map(
+        lambda country: COUNTRY_COORDS.get(str(country), (np.nan, np.nan))[0]
+    )
+    distribution["lon"] = distribution["nationality"].map(
+        lambda country: COUNTRY_COORDS.get(str(country), (np.nan, np.nan))[1]
+    )
+    distribution["avg_talent_score"] = distribution["avg_talent_score"].round(2)
+    distribution["highest_talent_score"] = distribution["highest_talent_score"].round(2)
+    return distribution
+
+
+def make_country_bubble_map(country_distribution: pd.DataFrame) -> go.Figure:
+    theme = get_active_theme()
+    map_data = country_distribution.dropna(subset=["lat", "lon"]).copy()
+    if map_data.empty:
+        fig = go.Figure()
+    else:
+        fig = px.scatter_geo(
+            map_data,
+            lat="lat",
+            lon="lon",
+            size="player_count",
+            color="avg_talent_score",
+            hover_name="nationality",
+            custom_data=["nationality"],
+            projection="natural earth",
+            color_continuous_scale=[
+                [0, theme["secondary"]],
+                [0.55, theme["primary"]],
+                [1, theme["gold"]],
+            ],
+            size_max=42,
+            title="Interactive Player Origin Map",
+            labels={
+                "player_count": "Players",
+                "avg_talent_score": "Avg Talent",
+            },
+        )
+    fig.update_layout(
+        height=540,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font={"color": theme["text"]},
+        geo=dict(
+            bgcolor="rgba(0,0,0,0)",
+            showland=True,
+            landcolor="rgba(15, 23, 42, 0.55)",
+            showcountries=True,
+            countrycolor="rgba(255,255,255,0.24)",
+            showocean=True,
+            oceancolor="rgba(0, 77, 152, 0.30)",
+        ),
+        margin=dict(l=0, r=0, t=55, b=0),
+    )
+    return fig
+
+
+def make_country_choropleth(country_distribution: pd.DataFrame) -> go.Figure:
+    theme = get_active_theme()
+    fig = px.choropleth(
+        country_distribution,
+        locations="nationality",
+        locationmode="country names",
+        color="player_count",
+        hover_name="nationality",
+        hover_data={
+            "player_count": True,
+            "avg_talent_score": ":.2f",
+            "highest_talent_score": ":.2f",
+            "nationality": False,
+        },
+        color_continuous_scale=[
+            [0, theme["secondary"]],
+            [0.55, theme["primary"]],
+            [1, theme["gold"]],
+        ],
+        title="Country Heatmap by Player Count",
+        labels={"player_count": "Players"},
+    )
+    fig.update_layout(
+        height=420,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font={"color": theme["text"]},
+        geo=dict(
+            bgcolor="rgba(0,0,0,0)",
+            showland=True,
+            landcolor="rgba(15, 23, 42, 0.55)",
+            showcountries=True,
+            countrycolor="rgba(255,255,255,0.22)",
+            showocean=True,
+            oceancolor="rgba(0, 77, 152, 0.28)",
+        ),
+        margin=dict(l=0, r=0, t=55, b=0),
+    )
+    return fig
+
+
+def get_countries_from_map_selection(selection_event: object) -> List[str]:
+    try:
+        points = selection_event.selection.points
+    except AttributeError:
+        try:
+            points = selection_event.get("selection", {}).get("points", [])
+        except AttributeError:
+            points = []
+
+    selected_countries = []
+    for point in points:
+        if isinstance(point, dict):
+            custom_data = point.get("customdata") or point.get("custom_data")
+            country = custom_data[0] if custom_data else point.get("hovertext")
+        else:
+            custom_data = getattr(point, "customdata", None)
+            country = custom_data[0] if custom_data else getattr(point, "hovertext", None)
+        if country and country not in selected_countries:
+            selected_countries.append(str(country))
+    return selected_countries
+
+
+def render_country_map_selector(ranked_players: pd.DataFrame) -> None:
+    render_section_heading(
+        "Regional Map",
+        "地区球员分布地图",
+        "点击或框选地图气泡，也可以用国家选择框，快速查看不同国家/地区的 U18 球员来源。",
+    )
+
+    if ranked_players.empty:
+        st.warning("No U18 players are available for the regional map.")
+        return
+
+    country_distribution = prepare_country_distribution(ranked_players)
+    available_countries = country_distribution["nationality"].tolist()
+    if "map_selected_countries" not in st.session_state:
+        st.session_state["map_selected_countries"] = available_countries[: min(5, len(available_countries))]
+
+    map_columns = st.columns([1.35, 0.85])
+    with map_columns[0]:
+        map_event = st.plotly_chart(
+            make_country_bubble_map(country_distribution),
+            use_container_width=True,
+            key="country_bubble_map",
+            on_select="rerun",
+            selection_mode=("points", "box", "lasso"),
+        )
+        selected_from_map = get_countries_from_map_selection(map_event)
+        if selected_from_map:
+            st.session_state["map_selected_countries"] = [
+                country for country in selected_from_map if country in available_countries
+            ]
+            st.session_state["map_country_selector"] = st.session_state[
+                "map_selected_countries"
+            ]
+
+    with map_columns[1]:
+        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+        st.subheader("选择国家 / 地区")
+        selected_countries = st.multiselect(
+            "Map country selector",
+            options=available_countries,
+            default=[
+                country
+                for country in st.session_state.get("map_selected_countries", [])
+                if country in available_countries
+            ],
+            key="map_country_selector",
+            label_visibility="collapsed",
+        )
+        if st.button("重置为全部国家", use_container_width=True):
+            selected_countries = available_countries
+        st.caption("提示：地图气泡支持点选、框选和套索选择。")
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        selected_distribution = country_distribution[
+            country_distribution["nationality"].isin(selected_countries)
+        ]
+        st.dataframe(
+            selected_distribution[
+                [
+                    "nationality",
+                    "player_count",
+                    "avg_talent_score",
+                    "highest_talent_score",
+                ]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    if not selected_countries:
+        st.warning("请至少选择一个国家/地区。")
+        return
+
+    selected_players = ranked_players[
+        ranked_players["nationality"].isin(selected_countries)
+    ].copy()
+    selected_players = selected_players.sort_values("talent_score", ascending=False)
+
+    st.divider()
+    metric_columns = st.columns(4)
+    metric_columns[0].metric("Selected Countries", len(selected_countries))
+    metric_columns[1].metric("Selected Players", len(selected_players))
+    metric_columns[2].metric(
+        "Avg Talent",
+        format_number(selected_players["talent_score"].mean(), 1),
+    )
+    metric_columns[3].metric(
+        "Best Score",
+        format_number(selected_players["talent_score"].max(), 1),
+    )
+
+    st.plotly_chart(
+        make_country_choropleth(country_distribution),
+        use_container_width=True,
+        key="country_choropleth_map",
+    )
+
+    chart_columns = st.columns(2)
+    with chart_columns[0]:
+        bar_data = (
+            selected_players.groupby("nationality", as_index=False)
+            .agg(
+                players=("player_name", "count"),
+                avg_talent_score=("talent_score", "mean"),
+            )
+            .sort_values("players", ascending=False)
+        )
+        fig = px.bar(
+            bar_data,
+            x="nationality",
+            y="players",
+            color="avg_talent_score",
+            title="Selected Countries: Player Count",
+            labels={"nationality": "Country", "players": "Players"},
+        )
+        fig.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font={"color": get_active_theme()["text"]},
+        )
+        st.plotly_chart(fig, use_container_width=True, key="country_selected_bar")
+
+    with chart_columns[1]:
+        fig = px.scatter(
+            selected_players,
+            x="minutes_played",
+            y="talent_score",
+            color="nationality",
+            size="market_value_eur",
+            hover_name="player_name",
+            title="Selected Region: Minutes vs Talent",
+            labels={
+                "minutes_played": "Minutes Played",
+                "talent_score": "Talent Score",
+            },
+        )
+        fig.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font={"color": get_active_theme()["text"]},
+        )
+        st.plotly_chart(fig, use_container_width=True, key="country_selected_scatter")
+
+    render_player_gallery(
+        selected_players,
+        "地区筛选后的 Top 球员",
+        limit=min(6, len(selected_players)),
+    )
+
+    with st.expander("查看地区筛选后的球员数据", expanded=False):
+        st.dataframe(
+            build_ranking_view(selected_players),
+            use_container_width=True,
+            hide_index=True,
+        )
+        st.download_button(
+            "下载地区筛选球员 CSV",
+            data=dataframe_to_csv_bytes(build_ranking_view(selected_players)),
+            file_name="regional_selected_players.csv",
+            mime="text/csv",
+            use_container_width=True,
+        )
 
 
 def render_player_fact_panel(player: pd.Series) -> None:
@@ -2278,6 +2610,7 @@ def main() -> None:
             "排名 Talent Ranking",
             "球员 Player Profile",
             "相似 Similar Finder",
+            "地区 Map",
             "模型 Score Model",
             "图表 Visual Analytics",
             "伦理 Ethics",
@@ -2296,12 +2629,14 @@ def main() -> None:
     with tabs[4]:
         render_similar_player_finder(ranked_players)
     with tabs[5]:
-        render_score_model_explanation(ranked_players)
+        render_country_map_selector(ranked_players)
     with tabs[6]:
-        render_visual_analytics(ranked_players)
+        render_score_model_explanation(ranked_players)
     with tabs[7]:
-        render_ethics_page()
+        render_visual_analytics(ranked_players)
     with tabs[8]:
+        render_ethics_page()
+    with tabs[9]:
         render_about_page(dataset_name)
 
 
