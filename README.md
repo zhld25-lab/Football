@@ -14,6 +14,12 @@ The project is designed for a university data science course. It uses a small sa
 python main.py
 ```
 
+It also includes an interactive Streamlit dashboard that can be launched with:
+
+```bash
+streamlit run streamlit_app.py
+```
+
 ScoutAI is not an automatic talent prediction system. It is a decision-support tool that helps scouts organize evidence and prioritize review. Human scouts, coaches, analysts, and recruitment staff should make the final decisions.
 
 ## 3. Problem Statement
@@ -49,6 +55,7 @@ ScoutAI provides an end-to-end Python pipeline:
 8. Save CSV outputs.
 9. Generate charts with matplotlib.
 10. Print a clean terminal summary.
+11. Launch an optional Streamlit dashboard for interactive exploration and presentation.
 
 ## 6. Data Sources
 
@@ -86,6 +93,7 @@ Football/
 |-- README.md
 |-- requirements.txt
 |-- main.py
+|-- streamlit_app.py
 |-- data/
 |   |-- sample_players.csv
 |   `-- readme_data.txt
@@ -102,8 +110,10 @@ Football/
 |       |-- top_talent_scores.png
 |       |-- score_breakdown.png
 |       `-- position_distribution.png
-`-- docs/
-    `-- project_summary.md
+|-- docs/
+|   `-- project_summary.md
+`-- .streamlit/
+    `-- config.toml
 ```
 
 ## 9. Methodology
@@ -166,7 +176,8 @@ ScoutAI uses two simple and explainable methods:
 | Talent ranking | Weighted scoring model |
 | Similar-player recommendation | Scaled cosine similarity |
 
-The project uses `pandas`, `numpy`, `scikit-learn`, and `matplotlib`.
+The command-line pipeline uses `pandas`, `numpy`, `scikit-learn`, and `matplotlib`.
+The dashboard additionally uses `streamlit` and `plotly`.
 
 ## 13. Talent Score Formula
 
@@ -255,7 +266,98 @@ Run the pipeline:
 python main.py
 ```
 
-## 17. Example Outputs
+Run the Streamlit dashboard:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+`python main.py` runs the reproducible command-line pipeline and generates output files. `streamlit run streamlit_app.py` launches the interactive scouting dashboard.
+
+## 17. Streamlit Web App
+
+The repository includes a full Streamlit application in `streamlit_app.py`. The app is designed as a professional scouting dashboard for a university data science course presentation. It keeps the original Python pipeline working and adds an interactive web interface on top of the existing `src/` modules.
+
+### App Features
+
+| Area | What the App Provides |
+| --- | --- |
+| Overview | Project goal, problem statement, workflow, and KPI cards |
+| Data Explorer | Full and filtered dataset previews, missing values, descriptive statistics, and CSV download |
+| Talent Ranking | Ranked U18 table, score formatting, top-player chart, component comparison, and ranked CSV download |
+| Player Profile | Detailed player cards, per-90 metrics, score breakdown, and automatic interpretation text |
+| Similar Player Finder | Cosine-similarity recommendations with same-position option and CSV download |
+| Score Model Explanation | Formula, component table, custom weight sliders, normalization warning, and active ranking |
+| Visual Analytics | Interactive charts for score, position, market value, age, minutes, position averages, and league averages |
+| Ethics and Limitations | Strong warning about minors, public data, bias, and human scouting responsibility |
+| About This Project | Technologies, repository structure, local run instructions, deployment steps, and references |
+
+The dashboard uses the sample dataset by default. Users can upload a CSV in the sidebar. Uploaded CSV files must include these minimum columns:
+
+```text
+player_name, age, position, club, league, appearances, minutes_played, goals, assists
+```
+
+Optional columns such as `player_id`, `nationality`, `height_cm`, `weight_kg`, `preferred_foot`, `market_value_eur`, `market_value_growth_pct`, `availability_score`, and `league_level_score` are filled with reasonable defaults if missing.
+
+### How to Run the Streamlit App Locally
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the command-line pipeline if you want to regenerate the static output files first:
+
+```bash
+python main.py
+```
+
+Launch the dashboard:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+### How to Deploy on Streamlit Community Cloud
+
+1. Push the repository to GitHub.
+2. Make sure `streamlit_app.py` exists in the repository root.
+3. Make sure `requirements.txt` includes `streamlit` and `plotly`.
+4. Go to Streamlit Community Cloud.
+5. Select the GitHub repository.
+6. Set the main file path to `streamlit_app.py`.
+7. Deploy the app.
+
+### Screenshots or Expected Screens
+
+The app is expected to show these presentation-ready screens:
+
+- Overview dashboard with KPI cards and workflow explanation.
+- Data Explorer with filters, table previews, missing value summary, and download button.
+- Talent Ranking with a sortable ranking table and interactive charts.
+- Player Profile with selected-player cards, calculated metrics, and score breakdown.
+- Similar Player Finder with similarity scores and downloadable recommendations.
+- Score Model Explanation with formula, component weights, and custom weight controls.
+- Visual Analytics with multiple interactive scouting charts.
+- Ethics and Limitations page with a clear warning about U18 player privacy and responsible use.
+
+### Troubleshooting
+
+| Issue | Suggested Fix |
+| --- | --- |
+| Streamlit cannot find packages | Run `pip install -r requirements.txt` and confirm the active Python environment |
+| Data fails to load | Check that `data/sample_players.csv` exists in the repository |
+| Uploaded CSV fails validation | Check that all required columns are present and spelled correctly |
+| Charts do not show | Rerun `python main.py` or check that dependencies installed correctly |
+| Output folders are missing | The app and pipeline create `outputs/` and `outputs/figures/` automatically |
+
+### Ethical Use of the App
+
+The Streamlit dashboard is a decision-support prototype. It should not be used to make final recruitment decisions about minors. Scouts should combine data analysis with video review, coach reports, appropriate medical review, family and player welfare considerations, and ethical scouting practices.
+
+## 18. Example Outputs
 
 After running the project, the generated files are:
 
@@ -269,7 +371,7 @@ After running the project, the generated files are:
 
 The terminal also prints the number of loaded rows, U18 rows, the top 5 ranked players, the similar-player target, and saved output paths.
 
-## 18. Ethical Considerations
+## 19. Ethical Considerations
 
 U18 football players are minors, so the project must be used carefully and responsibly.
 
@@ -284,7 +386,7 @@ U18 football players are minors, so the project must be used carefully and respo
 
 ScoutAI should be used to organize evidence and encourage structured discussion, not to label young players permanently.
 
-## 19. Limitations
+## 20. Limitations
 
 This project has important limitations:
 
@@ -298,7 +400,7 @@ This project has important limitations:
 
 The current version is best understood as a reproducible prototype for learning data science workflow design.
 
-## 20. Future Improvements
+## 21. Future Improvements
 
 Possible future improvements include:
 
@@ -306,14 +408,14 @@ Possible future improvements include:
 - Position-specific scoring models.
 - Market value growth prediction.
 - Time-series player development analysis.
-- Streamlit dashboard.
+- Additional dashboard pages for club-specific workflows.
 - More advanced similar-player search.
 - League strength adjustment.
 - Club-specific scouting filters.
 - Fairness and bias evaluation.
 - Event-level football data integration.
 
-## 21. References
+## 22. References
 
 - Transfermarkt datasets: <https://github.com/dcaribou/transfermarkt-datasets>
 - Football Manager 2023 dataset: <https://www.kaggle.com/datasets/siddhrajthakor/football-manager-2023-dataset>
@@ -321,3 +423,5 @@ Possible future improvements include:
 - NumPy documentation: <https://numpy.org/doc/>
 - scikit-learn documentation: <https://scikit-learn.org/stable/>
 - matplotlib documentation: <https://matplotlib.org/stable/>
+- Streamlit documentation: <https://docs.streamlit.io/>
+- Plotly Python documentation: <https://plotly.com/python/>

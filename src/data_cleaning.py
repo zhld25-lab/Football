@@ -43,6 +43,11 @@ def clean_player_data(players: pd.DataFrame) -> pd.DataFrame:
     cleaned = players.copy()
     cleaned.columns = [_standardize_column_name(column) for column in cleaned.columns]
 
+    if "player_id" not in cleaned.columns:
+        cleaned["player_id"] = [
+            f"GEN_{index + 1:04d}" for index in range(len(cleaned))
+        ]
+
     for column in TEXT_COLUMNS:
         if column not in cleaned.columns:
             cleaned[column] = "Unknown"
@@ -50,11 +55,6 @@ def clean_player_data(players: pd.DataFrame) -> pd.DataFrame:
     for column, default_value in NUMERIC_DEFAULTS.items():
         if column not in cleaned.columns:
             cleaned[column] = default_value
-
-    cleaned = cleaned.drop_duplicates(subset=["player_id"], keep="first")
-    cleaned = cleaned.drop_duplicates(
-        subset=["player_name", "club", "age"], keep="first"
-    )
 
     for column, default_value in NUMERIC_DEFAULTS.items():
         cleaned[column] = pd.to_numeric(cleaned[column], errors="coerce")
@@ -74,6 +74,18 @@ def clean_player_data(players: pd.DataFrame) -> pd.DataFrame:
             .str.strip()
             .replace("", "Unknown")
         )
+
+    missing_ids = cleaned["player_id"].eq("Unknown")
+    if missing_ids.any():
+        generated_ids = [
+            f"GEN_{position + 1:04d}" for position in range(missing_ids.sum())
+        ]
+        cleaned.loc[missing_ids, "player_id"] = generated_ids
+
+    cleaned = cleaned.drop_duplicates(subset=["player_id"], keep="first")
+    cleaned = cleaned.drop_duplicates(
+        subset=["player_name", "club", "age"], keep="first"
+    )
 
     cleaned = cleaned[cleaned["age"].between(10, 45)].copy()
     cleaned["age"] = cleaned["age"].round().astype(int)

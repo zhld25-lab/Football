@@ -1,3 +1,5 @@
+from typing import Mapping, Optional
+
 import pandas as pd
 
 
@@ -10,18 +12,22 @@ SCORE_WEIGHTS = {
 }
 
 
-def calculate_talent_scores(players: pd.DataFrame) -> pd.DataFrame:
+def calculate_talent_scores(
+    players: pd.DataFrame,
+    weights: Optional[Mapping[str, float]] = None,
+) -> pd.DataFrame:
     """Calculate a weighted Talent Score between 0 and 100."""
     scored = players.copy()
+    score_weights = dict(weights or SCORE_WEIGHTS)
 
     missing_columns = [
-        column for column in SCORE_WEIGHTS if column not in scored.columns
+        column for column in score_weights if column not in scored.columns
     ]
     if missing_columns:
         raise KeyError(f"Missing score component columns: {missing_columns}")
 
     scored["talent_score"] = 0.0
-    for column, weight in SCORE_WEIGHTS.items():
+    for column, weight in score_weights.items():
         scored["talent_score"] += scored[column].fillna(0) * weight
 
     scored["talent_score"] = scored["talent_score"].clip(0, 100).round(2)

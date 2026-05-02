@@ -6,7 +6,7 @@ Football clubs often need to identify promising U18 players from incomplete publ
 
 ## Solution
 
-ScoutAI is a Python-based decision-support system that ranks U18 football players and recommends similar players using public football-style data. It does not claim to predict future stars automatically.
+ScoutAI is a Python-based decision-support system that ranks U18 football players and recommends similar players using public football-style data. It includes both a command-line pipeline and a Streamlit scouting dashboard. It does not claim to predict future stars automatically.
 
 ## Data
 
@@ -25,6 +25,8 @@ Running `python main.py` creates:
 - `outputs/figures/top_talent_scores.png`
 - `outputs/figures/score_breakdown.png`
 - `outputs/figures/position_distribution.png`
+
+Running `streamlit run streamlit_app.py` opens the interactive dashboard with overview, data explorer, ranking, player profile, recommendation, model explanation, visual analytics, ethics, and project information sections.
 
 ## Ethics
 
