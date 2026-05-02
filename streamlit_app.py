@@ -1596,11 +1596,13 @@ def render_talent_ranking(
         st.plotly_chart(
             make_top_players_chart(ranking_data, limit=min(10, display_count)),
             use_container_width=True,
+            key="ranking_top_players_chart",
         )
     with chart_columns[1]:
         st.plotly_chart(
             make_component_breakdown_chart(ranking_data, limit=min(8, display_count)),
             use_container_width=True,
+            key="ranking_component_breakdown_chart",
         )
 
     st.divider()
@@ -1609,6 +1611,7 @@ def render_talent_ranking(
         st.plotly_chart(
             make_radar_comparison_chart(ranking_data, limit=min(3, len(ranking_data))),
             use_container_width=True,
+            key="ranking_radar_comparison_chart",
         )
     with radar_columns[1]:
         render_section_heading(
@@ -1674,18 +1677,34 @@ def render_player_profile(ranked_players: pd.DataFrame) -> None:
             unsafe_allow_html=True,
         )
     with spotlight_columns[1]:
-        st.plotly_chart(make_player_radar_chart(player), use_container_width=True)
+        st.plotly_chart(
+            make_player_radar_chart(player),
+            use_container_width=True,
+            key=f"profile_radar_{player['player_id']}",
+        )
 
     render_section_heading("Player Dossier", str(player["player_name"]))
     render_player_fact_panel(player)
 
     visual_columns = st.columns([0.8, 1.1, 1.1])
     with visual_columns[0]:
-        st.plotly_chart(make_talent_gauge(player), use_container_width=True)
+        st.plotly_chart(
+            make_talent_gauge(player),
+            use_container_width=True,
+            key=f"profile_gauge_{player['player_id']}",
+        )
     with visual_columns[1]:
-        st.plotly_chart(make_player_metric_bars(player), use_container_width=True)
+        st.plotly_chart(
+            make_player_metric_bars(player),
+            use_container_width=True,
+            key=f"profile_metric_bars_{player['player_id']}",
+        )
     with visual_columns[2]:
-        st.plotly_chart(make_player_output_chart(player), use_container_width=True)
+        st.plotly_chart(
+            make_player_output_chart(player),
+            use_container_width=True,
+            key=f"profile_output_chart_{player['player_id']}",
+        )
 
     strongest_component = max(SCORE_COMPONENTS, key=lambda column: player[column])
     weakest_component = min(SCORE_COMPONENTS, key=lambda column: player[column])
@@ -1804,7 +1823,11 @@ def render_similar_player_finder(ranked_players: pd.DataFrame) -> None:
         },
         range_x=[0, 1],
     )
-    st.plotly_chart(fig_similarity, use_container_width=True)
+    st.plotly_chart(
+        fig_similarity,
+        use_container_width=True,
+        key=f"similarity_scatter_{target_row['player_id']}",
+    )
 
     with st.expander("查看推荐 CSV 数据", expanded=False):
         st.dataframe(recommendations, use_container_width=True, hide_index=True)
@@ -1830,7 +1853,11 @@ def render_similar_player_finder(ranked_players: pd.DataFrame) -> None:
         hover_data=["club", "age", "talent_score"],
     )
     fig.update_yaxes(range=[0, 1])
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(
+        fig,
+        use_container_width=True,
+        key=f"similarity_bar_{target_row['player_id']}",
+    )
 
 
 def render_score_model_explanation(ranked_players: pd.DataFrame) -> None:
@@ -1956,7 +1983,7 @@ def render_visual_analytics(ranked_players: pd.DataFrame) -> None:
             st.image(FOOTBALL_IMAGES[index], use_container_width=True)
 
     chart = make_top_players_chart(ranked_players, limit=10)
-    st.plotly_chart(chart, use_container_width=True)
+    st.plotly_chart(chart, use_container_width=True, key="analytics_top_players_chart")
     st.caption("This chart shows which U18 players are currently highest on the shortlist.")
 
     chart_columns = st.columns(2)
@@ -1971,7 +1998,7 @@ def render_visual_analytics(ranked_players: pd.DataFrame) -> None:
             title="Position Distribution",
             labels={"position": "Position", "players": "Number of Players"},
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, key="analytics_position_distribution")
         st.caption("This chart helps scouts see whether the dataset is balanced by role.")
 
     with chart_columns[1]:
@@ -1982,7 +2009,7 @@ def render_visual_analytics(ranked_players: pd.DataFrame) -> None:
             title="Talent Score Distribution",
             labels={"talent_score": "Talent Score"},
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, key="analytics_talent_distribution")
         st.caption("This chart shows whether scores are clustered or spread out.")
 
     chart_columns = st.columns(2)
@@ -1999,7 +2026,7 @@ def render_visual_analytics(ranked_players: pd.DataFrame) -> None:
                 "talent_score": "Talent Score",
             },
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, key="analytics_market_vs_talent")
         st.caption("This chart highlights players whose model score differs from market value.")
 
     with chart_columns[1]:
@@ -2012,7 +2039,7 @@ def render_visual_analytics(ranked_players: pd.DataFrame) -> None:
             title="Age vs Talent Score",
             labels={"age": "Age", "talent_score": "Talent Score"},
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, key="analytics_age_vs_talent")
         st.caption("This chart shows how younger players compare within the U18 group.")
 
     chart_columns = st.columns(2)
@@ -2029,7 +2056,7 @@ def render_visual_analytics(ranked_players: pd.DataFrame) -> None:
                 "performance_score": "Performance Score",
             },
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, key="analytics_minutes_vs_performance")
         st.caption("This chart helps separate small-sample output from stable playing time.")
 
     with chart_columns[1]:
@@ -2045,7 +2072,7 @@ def render_visual_analytics(ranked_players: pd.DataFrame) -> None:
             title="Average Talent Score by Position",
             labels={"position": "Position", "talent_score": "Average Talent Score"},
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, key="analytics_position_average")
         st.caption("This chart helps scouts identify position groups that score highly.")
 
     league_scores = (
@@ -2060,7 +2087,7 @@ def render_visual_analytics(ranked_players: pd.DataFrame) -> None:
         title="Average Talent Score by League",
         labels={"league": "League", "talent_score": "Average Talent Score"},
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, key="analytics_league_average")
     st.caption(
         "This chart helps scouts identify whether high-scoring players are concentrated "
         "in specific positions or leagues."
