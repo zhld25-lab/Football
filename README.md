@@ -285,10 +285,12 @@ The repository includes a full Streamlit application in `streamlit_app.py`. The 
 | Overview | Project goal, problem statement, workflow, and KPI cards |
 | Visual Theme | Barca-inspired red-blue presentation theme, stadium background, image cards, and optional classic light mode |
 | Data Explorer | Full and filtered dataset previews, missing values, descriptive statistics, and CSV download |
-| Talent Ranking | Ranked U18 table, score formatting, top-player chart, component comparison, image shortlist wall, and ranked CSV download |
-| Player Profile | Detailed player cards, football imagery, per-90 metrics, score breakdown, hexagon radar chart, and automatic interpretation text |
-| Similar Player Finder | Cosine-similarity recommendations with same-position option, image recommendation cards, and CSV download |
+| Player Search | Keyword search box with live candidate options, including example names such as Lamine and Lahm |
+| Talent Ranking | Ranked U18 table, score formatting, top-player chart, component comparison, radar comparison, image shortlist wall, and ranked CSV download |
+| Player Profile | Dark high-contrast player dossier, football imagery, gauge chart, per-90 output chart, score bars, hexagon radar chart, and automatic interpretation text |
+| Similar Player Finder | Cosine-similarity recommendations with same-position option, visual scatter chart, image recommendation cards, and CSV download |
 | Score Model Explanation | Formula, component table, custom weight sliders, normalization warning, and active ranking |
+| Motion Windows | Small animated tactical-board and video windows for a more presentation-ready football-media feel |
 | Visual Analytics | Interactive charts for score, position, market value, age, minutes, position averages, and league averages |
 | Ethics and Limitations | Strong warning about minors, public data, bias, and human scouting responsibility |
 | About This Project | Technologies, repository structure, local run instructions, deployment steps, and references |
@@ -338,10 +340,10 @@ The app is expected to show these presentation-ready screens:
 - Overview dashboard with a Barca-inspired hero background, KPI cards, football image columns, and workflow explanation.
 - Data Explorer with filters, table previews, missing value summary, and download button.
 - Talent Ranking with a sortable ranking table, interactive charts, image shortlist cards, and top-player radar comparison.
-- Player Profile with selected-player cards, calculated metrics, image spotlight, score breakdown, and a six-axis ability radar.
-- Similar Player Finder with similarity scores, visual recommendation cards, and downloadable recommendations.
+- Player Profile with selected-player cards, a search box, high-contrast dossier panels, gauge charts, output charts, and a six-axis ability radar.
+- Similar Player Finder with searchable target selection, similarity scatter chart, visual recommendation cards, and downloadable recommendations.
 - Score Model Explanation with formula, component weights, and custom weight controls.
-- Visual Analytics with multiple interactive scouting charts.
+- Visual Analytics with multiple interactive scouting charts and football-media visual windows.
 - Ethics and Limitations page with a clear warning about U18 player privacy and responsible use.
 
 ### Troubleshooting

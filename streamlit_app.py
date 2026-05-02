@@ -188,6 +188,13 @@ MEDIA_STORIES = [
     },
 ]
 
+SEARCH_EXAMPLE_NAMES = [
+    "Lamine Yamal",
+    "Philipp Lahm",
+    "Lamar Hunt",
+    "Lampros Choutos",
+]
+
 
 def standardize_column_name(column_name: str) -> str:
     cleaned = column_name.strip().lower()
@@ -346,6 +353,7 @@ def ensure_output_files(ranked_players: pd.DataFrame) -> None:
 
 def render_custom_css() -> None:
     theme = THEMES.get(st.session_state.get("visual_theme"), THEMES["Barca Inspired"])
+    px.defaults.template = "plotly_dark" if theme["name"] == "Barca Inspired" else "plotly_white"
     st.markdown(
         f"""
         <style>
@@ -358,6 +366,9 @@ def render_custom_css() -> None:
             background-attachment: fixed;
             color: {theme["text"]};
         }}
+        .stApp, .stMarkdown, .stText, p, span, label, h1, h2, h3, h4, h5, h6 {{
+            color: {theme["text"]} !important;
+        }}
         .block-container {{
             padding-top: 1.4rem;
             padding-bottom: 2rem;
@@ -365,6 +376,9 @@ def render_custom_css() -> None:
         [data-testid="stSidebar"] > div:first-child {{
             background: linear-gradient(180deg, rgba(3, 7, 18, 0.96), rgba(15, 23, 42, 0.92));
             border-right: 1px solid rgba(255, 255, 255, 0.12);
+        }}
+        [data-testid="stSidebar"] * {{
+            color: #F8FAFC !important;
         }}
         [data-testid="stMetric"] {{
             background: {theme["surface"]};
@@ -374,8 +388,9 @@ def render_custom_css() -> None:
             box-shadow: 0 12px 28px rgba(2, 6, 23, 0.18);
         }}
         .small-muted {{
-            color: {theme["muted"]};
+            color: #F1F5F9;
             font-size: 0.95rem;
+            font-weight: 650;
         }}
         .hero-shell {{
             min-height: 360px;
@@ -447,8 +462,9 @@ def render_custom_css() -> None:
             margin-bottom: 0.25rem;
         }}
         .player-meta {{
-            color: {theme["muted"]};
+            color: #E2E8F0;
             font-size: 0.85rem;
+            font-weight: 650;
         }}
         .score-badge {{
             margin-top: 0.6rem;
@@ -480,8 +496,131 @@ def render_custom_css() -> None:
             min-height: 88px;
         }}
         .theme-note {{
-            color: {theme["muted"]};
+            color: #E2E8F0;
             font-size: 0.82rem;
+        }}
+        .fact-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.9rem;
+            margin: 1rem 0;
+        }}
+        .fact-tile {{
+            background: rgba(2, 6, 23, 0.72);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-left: 4px solid {theme["gold"]};
+            border-radius: 14px;
+            padding: 0.85rem 0.95rem;
+            min-height: 92px;
+            box-shadow: 0 14px 34px rgba(2, 6, 23, 0.24);
+        }}
+        .fact-label {{
+            color: #CBD5E1;
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-bottom: 0.35rem;
+        }}
+        .fact-value {{
+            color: #FFFFFF;
+            font-size: 1.55rem;
+            font-weight: 900;
+            line-height: 1.12;
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }}
+        .fact-sub {{
+            color: #E2E8F0;
+            font-size: 0.82rem;
+            font-weight: 650;
+            margin-top: 0.25rem;
+        }}
+        .search-panel {{
+            background: rgba(2, 6, 23, 0.76);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 18px;
+            padding: 1rem;
+            margin: 0.7rem 0 1rem;
+            box-shadow: 0 16px 38px rgba(2, 6, 23, 0.26);
+        }}
+        .motion-window {{
+            position: relative;
+            height: 210px;
+            border-radius: 16px;
+            overflow: hidden;
+            background:
+                linear-gradient(90deg, rgba(10, 88, 47, 0.92), rgba(16, 122, 63, 0.84)),
+                repeating-linear-gradient(90deg, rgba(255,255,255,0.08) 0 2px, transparent 2px 80px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: inset 0 0 0 2px rgba(255,255,255,0.08), 0 16px 38px rgba(2,6,23,0.28);
+        }}
+        .pitch-line {{
+            position: absolute;
+            inset: 20px;
+            border: 2px solid rgba(255,255,255,0.40);
+            border-radius: 10px;
+        }}
+        .moving-ball {{
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 999px;
+            background: #FFFFFF;
+            box-shadow: 0 0 18px rgba(255,255,255,0.9);
+            animation: ballmove 5.5s infinite ease-in-out;
+        }}
+        .moving-dot {{
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 999px;
+            background: {theme["gold"]};
+            box-shadow: 0 0 18px rgba(237,187,0,0.75);
+            animation: pressmove 4.8s infinite ease-in-out;
+        }}
+        .moving-dot.second {{
+            background: {theme["primary"]};
+            animation-delay: 0.8s;
+        }}
+        .motion-label {{
+            position: absolute;
+            left: 1rem;
+            bottom: 0.85rem;
+            color: white;
+            font-weight: 900;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+        }}
+        @keyframes ballmove {{
+            0% {{ left: 16%; top: 68%; }}
+            32% {{ left: 44%; top: 35%; }}
+            65% {{ left: 74%; top: 48%; }}
+            100% {{ left: 16%; top: 68%; }}
+        }}
+        @keyframes pressmove {{
+            0% {{ left: 22%; top: 34%; }}
+            50% {{ left: 60%; top: 28%; }}
+            100% {{ left: 22%; top: 34%; }}
+        }}
+        .stDataFrame {{
+            background: rgba(2, 6, 23, 0.78) !important;
+            border-radius: 14px;
+        }}
+        input, textarea {{
+            color: #FFFFFF !important;
+        }}
+        [data-baseweb="input"], [data-baseweb="select"] > div {{
+            background: rgba(15, 23, 42, 0.92) !important;
+            border-color: rgba(255, 255, 255, 0.24) !important;
+        }}
+        [data-baseweb="select"] span {{
+            color: #FFFFFF !important;
+        }}
+        .stButton button {{
+            background: linear-gradient(90deg, {theme["primary"]}, {theme["secondary"]});
+            color: #FFFFFF !important;
+            border: 1px solid rgba(255,255,255,0.20);
+            font-weight: 850;
         }}
         </style>
         """,
@@ -567,6 +706,96 @@ def render_media_wall() -> None:
                 """,
                 unsafe_allow_html=True,
             )
+
+
+def build_search_candidates(query: str, player_names: List[str]) -> List[str]:
+    cleaned_query = query.strip().lower()
+    if not cleaned_query:
+        return player_names[:12]
+
+    all_names = player_names + [
+        name for name in SEARCH_EXAMPLE_NAMES if name not in player_names
+    ]
+    startswith_matches = [
+        name for name in all_names if name.lower().startswith(cleaned_query)
+    ]
+    contains_matches = [
+        name
+        for name in all_names
+        if cleaned_query in name.lower() and name not in startswith_matches
+    ]
+    return (startswith_matches + contains_matches)[:12]
+
+
+def render_global_player_search(ranked_players: pd.DataFrame) -> None:
+    if ranked_players.empty:
+        return
+
+    player_names = ranked_players["player_name"].tolist()
+    with st.container():
+        st.markdown('<div class="search-panel">', unsafe_allow_html=True)
+        render_section_heading(
+            "Quick Search",
+            "球员查询窗口",
+            "输入名字或首字母后，下方会自动给出候选项。例如输入 lam 可以看到 Lamine Yamal 或 Lahm 这类候选。",
+        )
+        search_columns = st.columns([1, 1.25, 0.75])
+        query = search_columns[0].text_input(
+            "输入球员姓名 / 首字母",
+            value="",
+            placeholder="例如：lam, luc, diego",
+            key="global_player_query",
+        )
+        candidates = build_search_candidates(query, player_names)
+        if not candidates:
+            search_columns[1].warning("没有匹配候选，请换一个关键词。")
+            st.markdown("</div>", unsafe_allow_html=True)
+            return
+
+        selected_candidate = search_columns[1].selectbox(
+            "候选球员",
+            options=candidates,
+            key="global_player_candidate",
+        )
+        if search_columns[2].button("打开球员档案", use_container_width=True):
+            if selected_candidate in player_names:
+                st.session_state.selected_player = selected_candidate
+                st.success(f"已选择 {selected_candidate}，请进入 Player Profile 查看。")
+            else:
+                st.info(
+                    f"{selected_candidate} 是搜索示例名，不在当前 sample dataset 中。"
+                    "上传完整球员 CSV 后可以查询真实数据。"
+                )
+        st.markdown("</div>", unsafe_allow_html=True)
+
+
+def render_motion_windows() -> None:
+    render_section_heading(
+        "Motion Windows",
+        "视频 / 动图小窗口",
+        "用动态战术板模拟比赛片段，让页面更像球探汇报界面。",
+    )
+    motion_columns = st.columns(2)
+    with motion_columns[0]:
+        st.markdown(
+            """
+            <div class="motion-window">
+                <div class="pitch-line"></div>
+                <div class="moving-ball"></div>
+                <div class="moving-dot"></div>
+                <div class="moving-dot second"></div>
+                <div class="motion-label">Animated pressing pattern</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with motion_columns[1]:
+        st.video(
+            "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
+        )
+        st.caption(
+            "这里是视频窗口示例。后续可以替换成公开视频 URL、训练片段或自己上传的视频素材。"
+        )
 
 
 def render_player_gallery(players: pd.DataFrame, title: str, limit: int = 6) -> None:
@@ -720,6 +949,160 @@ def render_recommendation_cards(recommendations: pd.DataFrame, ranked_players: p
                 """,
                 unsafe_allow_html=True,
             )
+
+
+def render_player_fact_panel(player: pd.Series) -> None:
+    facts = [
+        ("Age", int(player["age"]), "development age"),
+        ("Nationality", player["nationality"], "background"),
+        ("Position", player["position"], "role"),
+        ("Club", player["club"], "current team"),
+        ("League", player["league"], "context"),
+        ("Talent Score", f"{player['talent_score']:.2f}", "model score"),
+        ("Height", f"{player['height_cm']:.0f} cm", "profile"),
+        ("Weight", f"{player['weight_kg']:.0f} kg", "profile"),
+        ("Foot", player["preferred_foot"], "preferred foot"),
+        ("Market Value", format_money(player["market_value_eur"]), "public signal"),
+        ("Minutes", f"{int(player['minutes_played']):,}", "playing time"),
+        ("Availability", f"{player['availability_score']:.0f}", "public indicator"),
+    ]
+    html = ['<div class="fact-grid">']
+    for label, value, subtext in facts:
+        html.append(
+            f"""
+            <div class="fact-tile">
+                <div class="fact-label">{escape(str(label))}</div>
+                <div class="fact-value">{escape(str(value))}</div>
+                <div class="fact-sub">{escape(str(subtext))}</div>
+            </div>
+            """
+        )
+    html.append("</div>")
+    st.markdown("".join(html), unsafe_allow_html=True)
+
+
+def make_talent_gauge(player: pd.Series) -> go.Figure:
+    theme = get_active_theme()
+    fig = go.Figure(
+        go.Indicator(
+            mode="gauge+number",
+            value=float(player["talent_score"]),
+            number={"font": {"size": 44, "color": theme["text"]}},
+            title={"text": "Talent Score", "font": {"color": theme["text"], "size": 18}},
+            gauge={
+                "axis": {"range": [0, 100], "tickcolor": theme["text"]},
+                "bar": {"color": theme["gold"]},
+                "bgcolor": "rgba(255,255,255,0.08)",
+                "borderwidth": 1,
+                "bordercolor": "rgba(255,255,255,0.20)",
+                "steps": [
+                    {"range": [0, 45], "color": "rgba(148, 163, 184, 0.25)"},
+                    {"range": [45, 70], "color": "rgba(0, 77, 152, 0.36)"},
+                    {"range": [70, 100], "color": "rgba(165, 0, 68, 0.42)"},
+                ],
+            },
+        )
+    )
+    fig.update_layout(
+        height=310,
+        paper_bgcolor="rgba(0,0,0,0)",
+        font={"color": theme["text"]},
+        margin=dict(l=25, r=25, t=45, b=20),
+    )
+    return fig
+
+
+def make_player_metric_bars(player: pd.Series) -> go.Figure:
+    theme = get_active_theme()
+    chart_data = pd.DataFrame(
+        {
+            "metric": [
+                "Performance",
+                "Development",
+                "Playing Time",
+                "League Context",
+                "Age Advantage",
+                "Availability",
+            ],
+            "score": [
+                player["performance_score"],
+                player["development_score"],
+                player["playing_time_score"],
+                player["league_context_score"],
+                player["age_advantage_score"],
+                player["availability_score"],
+            ],
+        }
+    ).sort_values("score")
+    fig = px.bar(
+        chart_data,
+        x="score",
+        y="metric",
+        orientation="h",
+        text="score",
+        color="score",
+        color_continuous_scale=[[0, theme["secondary"]], [0.6, theme["primary"]], [1, theme["gold"]]],
+        range_x=[0, 100],
+        title="能力维度条形图",
+    )
+    fig.update_traces(texttemplate="%{text:.1f}", textposition="outside")
+    fig.update_layout(
+        height=360,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font={"color": theme["text"]},
+        coloraxis_showscale=False,
+        margin=dict(l=20, r=40, t=55, b=20),
+    )
+    return fig
+
+
+def make_player_output_chart(player: pd.Series) -> go.Figure:
+    theme = get_active_theme()
+    chart_data = pd.DataFrame(
+        {
+            "metric": ["Goals", "Assists", "Goals / 90", "Assists / 90", "Contribution / 90"],
+            "value": [
+                player["goals"],
+                player["assists"],
+                player["goals_per_90"],
+                player["assists_per_90"],
+                player["contribution_per_90"],
+            ],
+        }
+    )
+    fig = px.bar(
+        chart_data,
+        x="metric",
+        y="value",
+        text="value",
+        title="进攻贡献图",
+        color="metric",
+    )
+    fig.update_traces(texttemplate="%{text:.2f}", textposition="outside")
+    fig.update_layout(
+        height=330,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font={"color": theme["text"]},
+        showlegend=False,
+        margin=dict(l=30, r=20, t=55, b=20),
+    )
+    return fig
+
+
+def render_target_summary_panel(player: pd.Series) -> None:
+    st.markdown(
+        f"""
+        <div class="fact-grid">
+            <div class="fact-tile"><div class="fact-label">Target</div><div class="fact-value">{escape(str(player['player_name']))}</div><div class="fact-sub">selected player</div></div>
+            <div class="fact-tile"><div class="fact-label">Position</div><div class="fact-value">{escape(str(player['position']))}</div><div class="fact-sub">role</div></div>
+            <div class="fact-tile"><div class="fact-label">Club</div><div class="fact-value">{escape(str(player['club']))}</div><div class="fact-sub">current team</div></div>
+            <div class="fact-tile"><div class="fact-label">Talent</div><div class="fact-value">{player['talent_score']:.2f}</div><div class="fact-sub">model score</div></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def render_dataset_controls() -> Tuple[pd.DataFrame, str]:
@@ -968,7 +1351,7 @@ def render_overview(clean_players: pd.DataFrame, ranked_players: pd.DataFrame) -
     render_section_heading(
         "Overview",
         "项目总览",
-        "把课程项目包装成一个更像真实足球媒体和球探部门共同使用的 dashboard。",
+        "红蓝主题球探数据中心：图片、图表、六边形能力图和候选球员搜索集中在一个页面体验里。",
     )
     st.markdown(
         """
@@ -983,6 +1366,8 @@ def render_overview(clean_players: pd.DataFrame, ranked_players: pd.DataFrame) -
     make_kpi_cards(clean_players, ranked_players)
     st.divider()
     render_media_wall()
+    st.divider()
+    render_motion_windows()
     st.divider()
 
     st.subheader("Problem Statement / 问题陈述")
@@ -1249,12 +1634,27 @@ def render_player_profile(ranked_players: pd.DataFrame) -> None:
     if st.session_state.selected_player not in player_names:
         st.session_state.selected_player = player_names[0]
 
-    selected_player = st.selectbox(
-        "Select player by name",
-        options=player_names,
-        index=player_names.index(st.session_state.selected_player),
-        key="selected_player",
+    search_columns = st.columns([1, 1.4])
+    profile_query = search_columns[0].text_input(
+        "球员搜索",
+        value="",
+        placeholder="输入首字母或名字，例如 lam / luc / diego",
+        key="profile_player_query",
     )
+    profile_candidates = build_search_candidates(profile_query, player_names)
+    dataset_candidates = [name for name in profile_candidates if name in player_names]
+    if not dataset_candidates:
+        search_columns[1].warning("当前 sample dataset 没有这个球员，可上传完整 CSV 后查询。")
+        selected_player = st.session_state.selected_player
+    else:
+        selected_player = search_columns[1].selectbox(
+            "候选球员",
+            options=dataset_candidates,
+            index=dataset_candidates.index(st.session_state.selected_player)
+            if st.session_state.selected_player in dataset_candidates
+            else 0,
+            key="selected_player",
+        )
     player = ranked_players[ranked_players["player_name"] == selected_player].iloc[0]
 
     spotlight_columns = st.columns([0.9, 1.6])
@@ -1276,56 +1676,16 @@ def render_player_profile(ranked_players: pd.DataFrame) -> None:
     with spotlight_columns[1]:
         st.plotly_chart(make_player_radar_chart(player), use_container_width=True)
 
-    st.subheader(player["player_name"])
-    identity_columns = st.columns(6)
-    identity_columns[0].metric("Age", int(player["age"]))
-    identity_columns[1].metric("Nationality", player["nationality"])
-    identity_columns[2].metric("Position", player["position"])
-    identity_columns[3].metric("Club", player["club"])
-    identity_columns[4].metric("League", player["league"])
-    identity_columns[5].metric("Talent Score", format_number(player["talent_score"], 2))
+    render_section_heading("Player Dossier", str(player["player_name"]))
+    render_player_fact_panel(player)
 
-    st.divider()
-    profile_columns = st.columns(4)
-    profile_columns[0].metric("Height", f"{player['height_cm']:.0f} cm")
-    profile_columns[1].metric("Weight", f"{player['weight_kg']:.0f} kg")
-    profile_columns[2].metric("Preferred Foot", player["preferred_foot"])
-    profile_columns[3].metric("Market Value", format_money(player["market_value_eur"]))
-
-    match_columns = st.columns(5)
-    match_columns[0].metric("Appearances", int(player["appearances"]))
-    match_columns[1].metric("Minutes", f"{int(player['minutes_played']):,}")
-    match_columns[2].metric("Goals", int(player["goals"]))
-    match_columns[3].metric("Assists", int(player["assists"]))
-    match_columns[4].metric("Availability", format_number(player["availability_score"], 0))
-
-    metric_columns = st.columns(6)
-    metric_columns[0].metric("Goals / 90", format_number(player["goals_per_90"]))
-    metric_columns[1].metric("Assists / 90", format_number(player["assists_per_90"]))
-    metric_columns[2].metric(
-        "Contribution / 90",
-        format_number(player["contribution_per_90"]),
-    )
-    metric_columns[3].metric("Performance", format_number(player["performance_score"]))
-    metric_columns[4].metric("Development", format_number(player["development_score"]))
-    metric_columns[5].metric("Playing Time", format_number(player["playing_time_score"]))
-
-    score_data = pd.DataFrame(
-        {
-            "component": [COMPONENT_LABELS[column] for column in SCORE_COMPONENTS],
-            "score": [player[column] for column in SCORE_COMPONENTS],
-        }
-    )
-    fig = px.bar(
-        score_data,
-        x="component",
-        y="score",
-        title=f"Score Breakdown for {player['player_name']}",
-        labels={"component": "Score Component", "score": "Score"},
-        text_auto=".1f",
-    )
-    fig.update_yaxes(range=[0, 100])
-    st.plotly_chart(fig, use_container_width=True)
+    visual_columns = st.columns([0.8, 1.1, 1.1])
+    with visual_columns[0]:
+        st.plotly_chart(make_talent_gauge(player), use_container_width=True)
+    with visual_columns[1]:
+        st.plotly_chart(make_player_metric_bars(player), use_container_width=True)
+    with visual_columns[2]:
+        st.plotly_chart(make_player_output_chart(player), use_container_width=True)
 
     strongest_component = max(SCORE_COMPONENTS, key=lambda column: player[column])
     weakest_component = min(SCORE_COMPONENTS, key=lambda column: player[column])
@@ -1377,18 +1737,33 @@ def render_similar_player_finder(ranked_players: pd.DataFrame) -> None:
     if default_player not in player_names:
         default_player = player_names[0]
 
-    control_columns = st.columns(3)
-    target_player = control_columns[0].selectbox(
-        "Target player",
-        options=player_names,
-        index=player_names.index(default_player),
+    control_columns = st.columns([1, 1.2, 0.75, 0.75])
+    similar_query = control_columns[0].text_input(
+        "搜索目标球员",
+        value="",
+        placeholder="输入首字母，例如 lam / jo / noah",
+        key="similar_player_query",
     )
-    top_n = control_columns[1].selectbox(
+    similar_candidates = [
+        name for name in build_search_candidates(similar_query, player_names)
+        if name in player_names
+    ]
+    if not similar_candidates:
+        control_columns[1].warning("当前数据没有匹配球员。")
+        return
+    target_player = control_columns[1].selectbox(
+        "候选目标",
+        options=similar_candidates,
+        index=similar_candidates.index(default_player)
+        if default_player in similar_candidates
+        else 0,
+    )
+    top_n = control_columns[2].selectbox(
         "Number of similar players",
         options=[3, 5, 10],
         index=1,
     )
-    same_position_only = control_columns[2].checkbox(
+    same_position_only = control_columns[3].checkbox(
         "Filter to same position",
         value=False,
     )
@@ -1413,14 +1788,26 @@ def render_similar_player_finder(ranked_players: pd.DataFrame) -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     recommendations.to_csv(OUTPUT_DIR / "similar_players.csv", index=False)
 
-    target_columns = st.columns(5)
-    target_columns[0].metric("Target", target_row["player_name"])
-    target_columns[1].metric("Position", target_row["position"])
-    target_columns[2].metric("Club", target_row["club"])
-    target_columns[3].metric("Age", int(target_row["age"]))
-    target_columns[4].metric("Talent Score", format_number(target_row["talent_score"]))
+    render_target_summary_panel(target_row)
 
-    st.dataframe(recommendations, use_container_width=True, hide_index=True)
+    fig_similarity = px.scatter(
+        recommendations,
+        x="similarity_score",
+        y="talent_score",
+        size="talent_score",
+        color="position",
+        hover_name="similar_player",
+        title="Similarity vs Talent Score",
+        labels={
+            "similarity_score": "Similarity",
+            "talent_score": "Talent Score",
+        },
+        range_x=[0, 1],
+    )
+    st.plotly_chart(fig_similarity, use_container_width=True)
+
+    with st.expander("查看推荐 CSV 数据", expanded=False):
+        st.dataframe(recommendations, use_container_width=True, hide_index=True)
     st.download_button(
         "Download similar player recommendations",
         data=dataframe_to_csv_bytes(recommendations),
@@ -1855,6 +2242,7 @@ def main() -> None:
     filtered_players = apply_filters(dashboard_players, filters)
 
     render_header(dataset_name)
+    render_global_player_search(ranked_players)
 
     tabs = st.tabs(
         [
